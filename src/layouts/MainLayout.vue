@@ -225,25 +225,43 @@ Asafoetida</p>
       </section>
     </header>
     <main class="relative z-10">
-      <Splide :options="mainOptions" aria-label="Main Slider">
-      <SplideSlide>
-        <img src="https://images.pexels.com/photos/2632292/pexels-photo-2632292.jpeg" alt="Sample 1">
-      </SplideSlide>
-      <SplideSlide>
-        <img src="https://images.pexels.com/photos/4199098/pexels-photo-4199098.jpeg" alt="Sample 2">
-      </SplideSlide>
-    </Splide>
+      <div class="w-full sm:w-auto">
+    <Carousel
+      class="relative w-full max-w-xs"
+      @init-api="(val) => emblaMainApi = val"
+    >
+      <CarouselContent>
+        <CarouselItem v-for="(_, index) in asafPremiumImages" :key="index">
+          <div class="p-1">
+            <Card class="bg-black/45 min-h-[80dvh]">
+              <CardContent class="flex justify-center items-center p-6 bg-transparent aspect-square">
+                <img :src="asafPremiumImages[index]" alt="">
+              </CardContent>
+            </Card>
+          </div>
+        </CarouselItem>
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
 
-    <!-- Thumbnail Slider -->
-    <Splide :options="thumbnailOptions" aria-label="Thumbnail Slider">
-      <SplideSlide>
-        <img src="https://images.pexels.com/photos/2632292/pexels-photo-2632292.jpeg" alt="Sample 1">
-      </SplideSlide>
-      <SplideSlide>
-        <img src="https://images.pexels.com/photos/4199098/pexels-photo-4199098.jpeg" alt="Sample 2">
-      </SplideSlide>
-    </Splide>
-      <!-- Your main content here -->
+    <Carousel
+      class="relative w-full max-w-xs"
+      @init-api="(val) => emblaThumbnailApi = val"
+    >
+      <CarouselContent class="flex gap-1 ml-0">
+        <CarouselItem v-for="(_, index) in asafPremiumImages" :key="index" class="pl-0 cursor-pointer basis-1/4" @click="onThumbClick(index)">
+          <div class="p-1" :class="index === selectedIndex ? '' : 'opacity-50'">
+            <Card class="bg-black/45">
+              <CardContent class="flex justify-center items-center p-6 bg-transparent aspect-square">
+                <img :src="asafPremiumImages[index]" alt="">
+              </CardContent>
+            </Card>
+          </div>
+        </CarouselItem>
+      </CarouselContent>
+    </Carousel>
+  </div>
     </main>
     <footer class="relative z-10">
       <!-- Your footer content here -->
@@ -254,6 +272,14 @@ Asafoetida</p>
 <script lang="ts" setup>
 import imgAsafPremium from '@/assets/img1/asaPremiumFront.png'
 import imgAsafNormal from '@/assets/img1/asafoetidaNomalFront.png'
+import asafPremiumFront from '@/assets/img1/asaPremiumFront.png'
+import asafPremiumBack from '@/assets/img1/asaPremiumLeft.png'
+import asafPremiumNutrition from '@/assets/img1/asaPremiumNutrition.png'
+import asafPremiumRight from '@/assets/img1/asaPremiumRigh.png'
+import asafPremiumZoomed from '@/assets/img1/asaPremiumZoomed.png'
+import asafPremiumZoomFront from '@/assets/img1/asaPremiumZoomFront.png'
+
+
 import { ref } from 'vue';
 
 const imageSelected = ref<string | ''>(imgAsafPremium);
@@ -273,35 +299,46 @@ const handleChange = (image: string) => {
   showInfo.value = true;
   imageSelected.value = image;
 }
+import { watchOnce } from '@vueuse/core'
+import { Card, CardContent } from '@/components/ui/card'
+import { Carousel, type CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 
-const mainOptions = {
-        type: 'fade',
-        heightRatio: 0.5,
-        pagination: false,
-        arrows: false,
-        cover: true,
-      }
+//Premium Images
+const asafPremiumImages = [
+  asafPremiumFront,
+  asafPremiumBack,
+  asafPremiumNutrition,
+  asafPremiumRight,
+  asafPremiumZoomed,
+  asafPremiumZoomFront,
+]
 
-const thumbnailOptions = {
-        rewind: true,
-        fixedWidth: 104,
-        fixedHeight: 58,
-        isNavigation: true,
-        gap: 10,
-        focus: 'center',
-        pagination: false,
-        cover: true,
-        dragMinThreshold: {
-          mouse: 4,
-          touch: 10,
-        },
-        breakpoints: {
-          640: {
-            fixedWidth: 66,
-            fixedHeight: 38,
-          },
-        },
-      }
+const emblaMainApi = ref<CarouselApi>()
+const emblaThumbnailApi = ref<CarouselApi>()
+const selectedIndex = ref(0)
+
+function onSelect() {
+  if (!emblaMainApi.value || !emblaThumbnailApi.value)
+    return
+  selectedIndex.value = emblaMainApi.value.selectedScrollSnap()
+  emblaThumbnailApi.value.scrollTo(emblaMainApi.value.selectedScrollSnap())
+}
+
+function onThumbClick(index: number) {
+  if (!emblaMainApi.value || !emblaThumbnailApi.value)
+    return
+  emblaMainApi.value.scrollTo(index)
+}
+
+watchOnce(emblaMainApi, (emblaMainApi) => {
+  if (!emblaMainApi)
+    return
+
+  onSelect()
+  emblaMainApi.on('select', onSelect)
+  emblaMainApi.on('reInit', onSelect)
+})
+
 </script>
 
 <style scoped></style>

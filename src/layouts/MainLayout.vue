@@ -17,12 +17,14 @@
       <!--Products-->
       <section :class="{ 'grid-cols-3': showInfo, 'grid-cols-2': !showInfo }"
         class="grid relative z-10 flex-col flex-1 items-center px-5 py-10  h-[calc(100vh-80px)] ">
+        <!--Image to toggle between asaf normal and premium-->
         <img v-if="showInfo" class="absolute top-0 right-0 bottom-0 z-20 w-24 cursor-pointer animate-delay-[990ms]"
           :key="imageSelected"
           :class="{ 'animate-fade-down': imageSelected === imgAsafPremium, 'animate-fade-up': imageSelected === imgAsafNormal }"
           @click="handleChange(imageSelected === imgAsafPremium ? imgAsafNormal : imgAsafPremium)"
           :src="imageSelected === imgAsafPremium ? imgAsafNormal : imgAsafPremium" alt="">
-
+      <!--Button to close info and set default Values-->
+      <button v-if="showInfo" @click="handleClose" class="absolute top-5 left-5 z-40 p-2 text-white bg-transparent rounded-full border border-white transition-all duration-300 ease-in-out cursor-pointer hover:scale-110">Cerrar</button>
         <!--Title-->
         <div v-if="!showInfo" class="pl-1">
           <h2 class="text-white font-bubblegum animate-fade" :key="imageSelected"
@@ -63,15 +65,15 @@
 
 
           </article>
-          <article v-if="showInfo && imageSelected === imgAsafPremium">
+          <article :key="imageSelected" v-if="showInfo && imageSelected === imgAsafPremium">
             <div class="w-full sm:w-auto">
               <Carousel class="relative w-full max-w-xs" @init-api="(val) => emblaMainApi = val">
                 <CarouselContent>
                   <CarouselItem v-for="(_, index) in asafPremiumImages" :key="index">
                     <div class="p-1">
-                      <Card class="p-0 bg-transparent backdrop-blur-xs">
+                      <Card class="p-0 bg-transparent">
                         <CardContent class="flex justify-center items-center p-6 bg-transparent aspect-square">
-                          <img class="object-cover w-full h-full max-w-[12dvw]" :src="asafPremiumImages[index]" alt="">
+                          <img class="object-cover w-full h-full max-w-[12dvw] select-none hover:scale-150 transition-transform duration-300 ease-in-out" :src="asafPremiumImages[index]" alt="">
                         </CardContent>
                       </Card>
                     </div>
@@ -81,14 +83,14 @@
                 <CarouselNext />
               </Carousel>
 
-              <Carousel class="relative w-full max-w-xs" @init-api="(val) => emblaThumbnailApi = val">
-                <CarouselContent class="flex gap-1 ml-0">
+              <Carousel class="relative w-full max-w-xs select-none" @init-api="(val) => emblaThumbnailApi = val">
+                <CarouselContent class="flex gap-1 ml-0 select-none">
                   <CarouselItem v-for="(_, index) in asafPremiumImages" :key="index"
                     class="pl-0 cursor-pointer basis-1/4" @click="onThumbClick(index)">
                     <div class="p-1" :class="index === selectedIndex ? '' : 'opacity-50'">
                       <Card class="bg-black/45">
                         <CardContent class="flex justify-center items-center p-6 bg-transparent aspect-square">
-                          <img class="object-cover w-full h-full min-w-[60px]" :src="asafPremiumImages[index]" alt="">
+                          <img class="object-cover w-full h-full min-w-[60px] select-none" :src="asafPremiumImages[index]" alt="">
                         </CardContent>
                       </Card>
                     </div>
@@ -97,15 +99,15 @@
               </Carousel>
             </div>
           </article>
-          <article v-if="showInfo && imageSelected === imgAsafNormal">
+          <article :key="imageSelected" v-if="showInfo && imageSelected === imgAsafNormal">
             <div class="w-full sm:w-auto">
               <Carousel class="relative w-full max-w-xs" @init-api="(val) => emblaMainApi = val">
                 <CarouselContent>
                   <CarouselItem v-for="(_, index) in asafNormalImages" :key="index">
                     <div class="p-1">
-                      <Card class="p-0 bg-transparent backdrop-blur-xs">
+                      <Card class="p-0 bg-transparent">
                         <CardContent class="flex justify-center items-center p-6 bg-transparent aspect-square">
-                          <img class="object-cover w-full h-full max-w-[12dvw]" :src="asafNormalImages[index]" alt="">
+                          <img class="object-cover w-full h-full max-w-[12dvw] hover:scale-150 transition-transform duration-300 ease-in-out" :src="asafNormalImages[index]" alt="">
                         </CardContent>
                       </Card>
                     </div>
@@ -121,8 +123,8 @@
                     class="pl-0 cursor-pointer basis-1/4" @click="onThumbClick(index)">
                     <div class="p-1" :class="index === selectedIndex ? '' : 'opacity-50'">
                       <Card class="bg-black/45">
-                        <CardContent class="flex justify-center items-center p-6 bg-transparent aspect-square">
-                          <img class="object-cover w-full h-full min-w-[60px]" :src="asafNormalImages[index]" alt="">
+                        <CardContent class="flex object-cover justify-center items-center p-6 bg-transparent aspect-square">
+                          <img class="object-cover w-full h-full min-w-[60px] hover:scale-150 transition-transform duration-300 ease-in-out" :src="asafNormalImages[index]" alt="">
                         </CardContent>
                       </Card>
                     </div>
@@ -365,7 +367,11 @@ import asafPremiumRight from '@/assets/img1/asaPremiumRigh.png'
 import asafPremiumZoomed from '@/assets/img1/asaPremiumZoomed.png'
 import asafPremiumZoomFront from '@/assets/img1/asaPremiumZoomFront.png'
 
-
+//Asaf normal
+import asafNormalFront from '@/assets/img1/asafNormalFront.png'
+import asafNormalBack from '@/assets/img1/asafNormalLeft.png'
+import asafNormalRight from '@/assets/img1/asafNormalRight.png'
+import asafNormalZoomed from '@/assets/img1/asafNormalZoomed.png'
 import { ref } from 'vue';
 
 const imageSelected = ref<string | ''>(imgAsafPremium);
@@ -400,7 +406,12 @@ const asafPremiumImages = [
 ]
 
 //Normal Images
-const asafNormalImages = asafPremiumImages;
+const asafNormalImages = [
+  asafNormalFront,
+  asafNormalBack,
+  asafNormalRight,
+  asafNormalZoomed,
+]
 
 const emblaMainApi = ref<CarouselApi>()
 const emblaThumbnailApi = ref<CarouselApi>()
